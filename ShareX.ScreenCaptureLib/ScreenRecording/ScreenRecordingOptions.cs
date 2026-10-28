@@ -45,6 +45,9 @@ namespace ShareX.ScreenCaptureLib
         public bool DrawCursor { get; set; }
         public FFmpegOptions FFmpeg { get; set; } = new FFmpegOptions();
 
+        // Containers limited to Opus/Vorbis audio
+        private bool IsWebMTarget => FFmpeg.VideoCodec is FFmpegVideoCodec.libvpx or FFmpegVideoCodec.libvpx_vp9 or FFmpegVideoCodec.libsvtav1;
+
         public string GetFFmpegCommands()
         {
             string commands;
@@ -322,7 +325,15 @@ namespace ShareX.ScreenCaptureLib
                 switch (FFmpeg.AudioCodec)
                 {
                     case FFmpegAudioCodec.libvoaacenc: // http://trac.ffmpeg.org/wiki/Encode/AAC
-                        args.Append($"-c:a aac -ac 2 -b:a {FFmpeg.AAC_Bitrate}k "); // -ac 2 required otherwise failing with 7.1
+                        if (IsWebMTarget)
+                        {
+                            // WebM muxer only supports Vorbis/Opus audio; AAC would fail with "Could not write header".
+                            args.Append($"-c:a libopus -b:a {FFmpeg.Opus_Bitrate}k ");
+                        }
+                        else
+                        {
+                            args.Append($"-c:a aac -ac 2 -b:a {FFmpeg.AAC_Bitrate}k "); // -ac 2 required otherwise failing with 7.1
+                        }
                         break;
                     case FFmpegAudioCodec.libopus: // https://www.ffmpeg.org/ffmpeg-codecs.html#libopus-1
                         args.Append($"-c:a libopus -b:a {FFmpeg.Opus_Bitrate}k ");
