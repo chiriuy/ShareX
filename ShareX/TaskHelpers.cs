@@ -420,7 +420,8 @@ namespace ShareX
             imageData.ImageStream = SaveImageAsStream(img, imageFormat, taskSettings.ImageSettings.ImagePNGBitDepth,
                 taskSettings.ImageSettings.ImageJPEGQuality, taskSettings.ImageSettings.ImageGIFQuality,
                 GetPNGEncoderOptions(taskSettings.ImageSettings), taskSettings.ImageSettings.ImageJPEGSubsampling,
-                taskSettings.ImageSettings.ImageBMPBitDepth, autoUseJPEG ? jpegSizeLimit : long.MaxValue, out bool pngSizeLimitExceeded);
+                taskSettings.ImageSettings.ImageBMPBitDepth,
+                taskSettings.ImageSettings.ImageJXLQuality, taskSettings.ImageSettings.ImageJXLEffort, autoUseJPEG ? jpegSizeLimit : long.MaxValue, out bool pngSizeLimitExceeded);
             imageData.ImageFormat = imageFormat;
 
             if (autoUseJPEG && (pngSizeLimitExceeded || imageData.ImageStream.Length > jpegSizeLimit))
@@ -475,7 +476,8 @@ namespace ShareX
             return SaveImageAsStream(img, imageFormat, taskSettings.ImageSettings.ImagePNGBitDepth,
                 taskSettings.ImageSettings.ImageJPEGQuality, taskSettings.ImageSettings.ImageGIFQuality,
                 GetPNGEncoderOptions(taskSettings.ImageSettings), taskSettings.ImageSettings.ImageJPEGSubsampling,
-                taskSettings.ImageSettings.ImageBMPBitDepth, long.MaxValue, out _);
+                taskSettings.ImageSettings.ImageBMPBitDepth,
+                taskSettings.ImageSettings.ImageJXLQuality, taskSettings.ImageSettings.ImageJXLEffort, long.MaxValue, out _);
         }
 
         private static SKPngEncoderOptions GetPNGEncoderOptions(TaskSettingsImage settings)
@@ -492,15 +494,15 @@ namespace ShareX
         public static MemoryStream SaveImageAsStream(Image img, EImageFormat imageFormat, PNGBitDepth pngBitDepth = PNGBitDepth.Automatic,
             int jpegQuality = 90, GIFQuality gifQuality = GIFQuality.Adaptive,
             SKJpegEncoderDownsample jpegSubsampling = SKJpegEncoderDownsample.Downsample420,
-            BMPBitDepth bmpBitDepth = BMPBitDepth.Bit24)
+            BMPBitDepth bmpBitDepth = BMPBitDepth.Bit24, int jxlQuality = 90, int jxlEffort = 7)
         {
             return SaveImageAsStream(img, imageFormat, pngBitDepth, jpegQuality, gifQuality,
-                SKPngEncoderOptions.Default, jpegSubsampling, bmpBitDepth, long.MaxValue, out _);
+                SKPngEncoderOptions.Default, jpegSubsampling, bmpBitDepth, jxlQuality, jxlEffort, long.MaxValue, out _);
         }
 
         private static MemoryStream SaveImageAsStream(Image img, EImageFormat imageFormat, PNGBitDepth pngBitDepth,
             int jpegQuality, GIFQuality gifQuality, SKPngEncoderOptions pngOptions, SKJpegEncoderDownsample jpegSubsampling,
-            BMPBitDepth bmpBitDepth, long pngSizeLimit, out bool pngSizeLimitExceeded)
+            BMPBitDepth bmpBitDepth, int jxlQuality, int jxlEffort, long pngSizeLimit, out bool pngSizeLimitExceeded)
         {
             MemoryStream ms = new MemoryStream();
             pngSizeLimitExceeded = false;
@@ -537,12 +539,30 @@ namespace ShareX
                     case EImageFormat.BMP:
                         SkiaImageHelpers.SaveBMP(img, ms, bmpBitDepth);
                         break;
+                    case EImageFormat.JXL:
+                        SaveJXL(img, ms, jxlQuality, jxlEffort);
+                        break;
                 }
             }
             catch (Exception e)
             {
                 DebugHelper.WriteException(e);
                 e.ShowError();
+            }
+
+            return ms;
+        }
+
+        private static MemoryStream SaveJXL(Image img, MemoryStream ms, int quality, int effort)
+        {
+            // Magick.NET provides the JPEG XL encoder; feed it lossless PNG bytes produced by Skia.
+            using (SKImage skImage = SKImage.FromBitmap(img))
+            using (SKData pngData = skImage.Encode(SKEncodedImageFormat.Png, 100))
+            using (ImageMagick.MagickImage magickImage = new ImageMagick.MagickImage(pngData.ToArray()))
+            {
+                magickImage.Quality = (uint)Math.Clamp(quality, 1, 100);
+                magickImage.Settings.SetDefine(ImageMagick.MagickFormat.Jxl, "effort", Math.Clamp(effort, 1, 10).ToString());
+                magickImage.Write(ms, ImageMagick.MagickFormat.Jxl);
             }
 
             return ms;

@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" />
     <PackageReference Include="SkiaSharp" />
     <PackageReference Include="ZXing.Net" />
   </ItemGroup>

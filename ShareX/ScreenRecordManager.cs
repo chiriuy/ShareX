@@ -105,7 +105,8 @@ namespace ShareX
                 taskSettings.CaptureSettings.FFmpegOptions.VideoCodec = FFmpegVideoCodec.gif;
             }
 
-            if (!useNative && taskSettings.CaptureSettings.FFmpegOptions.IsAnimatedImage)
+            if (!useNative && taskSettings.CaptureSettings.FFmpegOptions.IsAnimatedImage &&
+                taskSettings.CaptureSettings.FFmpegOptions.VideoCodec != FFmpegVideoCodec.libaom_av1)
             {
                 taskSettings.CaptureSettings.ScreenRecordTwoPassEncoding = true;
             }

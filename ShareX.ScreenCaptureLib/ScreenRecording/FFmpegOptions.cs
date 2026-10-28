@@ -59,6 +59,10 @@ namespace ShareX.ScreenCaptureLib
         public int AMF_Bitrate { get; set; } = 3000; // kbps
         public FFmpegQSVPreset QSV_Preset { get; set; } = FFmpegQSVPreset.fast;
         public int QSV_Bitrate { get; set; } = 3000; // kbps
+        public int SVTAV1_CRF { get; set; } = 35;
+        public int SVTAV1_Preset { get; set; } = 8;
+        public int AVIF_CRF { get; set; } = 30;
+        public int AVIF_CPUUsed { get; set; } = 8;
 
         // Audio
         public int AAC_Bitrate { get; set; } = 128; // kbps
@@ -107,6 +111,10 @@ namespace ShareX.ScreenCaptureLib
                             return "webp";
                         case FFmpegVideoCodec.apng:
                             return "apng";
+                        case FFmpegVideoCodec.libsvtav1:
+                            return "webm";
+                        case FFmpegVideoCodec.libaom_av1:
+                            return "avif";
                     }
                 }
                 else if (!string.IsNullOrEmpty(AudioSource))
@@ -134,7 +142,7 @@ namespace ShareX.ScreenCaptureLib
 
         public bool IsAudioSourceSelected => !string.IsNullOrEmpty(AudioSource) && (!IsVideoSourceSelected || !IsAnimatedImage);
 
-        public bool IsAnimatedImage => VideoCodec == FFmpegVideoCodec.gif || VideoCodec == FFmpegVideoCodec.libwebp || VideoCodec == FFmpegVideoCodec.apng;
+        public bool IsAnimatedImage => VideoCodec == FFmpegVideoCodec.gif || VideoCodec == FFmpegVideoCodec.libwebp || VideoCodec == FFmpegVideoCodec.apng || VideoCodec == FFmpegVideoCodec.libaom_av1;
 
         public bool IsEvenSizeRequired => !IsAnimatedImage;
 

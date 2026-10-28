@@ -64,7 +64,11 @@ namespace ShareX.ScreenCaptureLib
         [Description("WebP")]
         libwebp,
         [Description("APNG")]
-        apng
+        apng,
+        [Description("AV1 / SVT-AV1")]
+        libsvtav1,
+        [Description("AVIF / libaom")]
+        libaom_av1
     }
 
     public enum FFmpegAudioCodec

@@ -69,7 +69,9 @@ namespace ShareX.HelpersLib
         [Description("gif")]
         GIF,
         [Description("bmp")]
-        BMP
+        BMP,
+        [Description("jxl")]
+        JXL
     }
 
     public enum HashType

@@ -290,6 +290,19 @@ namespace ShareX.ScreenCaptureLib
                             args.Append("-f apng ");
                             args.Append("-plays 0 ");
                             break;
+                        case FFmpegVideoCodec.libsvtav1: // https://ffmpeg.org/ffmpeg-codecs.html#libsvtav1
+                            args.Append($"-crf {FFmpeg.SVTAV1_CRF} ");
+                            args.Append($"-preset {Math.Clamp(FFmpeg.SVTAV1_Preset, 0, 13)} ");
+                            args.Append("-pix_fmt yuv420p ");
+                            break;
+                        case FFmpegVideoCodec.libaom_av1: // https://ffmpeg.org/ffmpeg-codecs.html#libaom-av1
+                            args.Append($"-crf {FFmpeg.AVIF_CRF} ");
+                            args.Append($"-cpu-used {Math.Clamp(FFmpeg.AVIF_CPUUsed, 0, 8)} ");
+                            args.Append("-row-mt 1 ");
+                            args.Append("-usage realtime ");
+                            args.Append("-pix_fmt yuv420p ");
+                            args.Append("-f avif "); // force the AVIF muxer (animated AVIF when recording)
+                            break;
                     }
 
                     switch (FFmpeg.VideoCodec)

@@ -7,6 +7,7 @@
     <PackageVersion Include="FluentFTP" Version="55.1.0" />
     <PackageVersion Include="Microsoft.Data.Sqlite" Version="11.0.0-rc.1.26425.128" />
     <PackageVersion Include="Microsoft.Data.Sqlite.Core" Version="11.0.0-rc.1.26425.128" />
+    <PackageVersion Include="Magick.NET-Q16-AnyCPU" Version="14.17.2" />
     <PackageVersion Include="Microsoft.ML.OnnxRuntime.DirectML" Version="1.24.4" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageVersion Include="SSH.NET" Version="2026.0.0" />

@@ -335,6 +335,7 @@ internal sealed class TaskSettingsPageBuilder
         };
         Control gifOptions = Row(Strings.TaskSettingsWindow_GIFQuality, EnumCombo(() => image.ImageGIFQuality, value => image.ImageGIFQuality = value));
         Control bmpOptions = Row(Strings.TaskSettingsWindow_BMPBitDepth, EnumCombo(() => image.ImageBMPBitDepth, value => image.ImageBMPBitDepth = value));
+        Control jxlOptions = Row("JPEG XL quality", Number(() => image.ImageJXLQuality, value => image.ImageJXLQuality = (int)value, 1, 100));
         Border automaticJpeg = new()
         {
             Child = EnabledCard(_imageOverride, Strings.TaskSettingsWindow_AutomaticJPEG,
@@ -345,6 +346,7 @@ internal sealed class TaskSettingsPageBuilder
         SettingsSearch.SetIsAvailabilityContainer(jpegOptions, true);
         SettingsSearch.SetIsAvailabilityContainer(gifOptions, true);
         SettingsSearch.SetIsAvailabilityContainer(bmpOptions, true);
+        SettingsSearch.SetIsAvailabilityContainer(jxlOptions, true);
         SettingsSearch.SetIsAvailabilityContainer(automaticJpeg, true);
 
         void UpdateEncoderVisibility(EImageFormat format)
@@ -353,6 +355,7 @@ internal sealed class TaskSettingsPageBuilder
             jpegOptions.IsVisible = format == EImageFormat.JPEG;
             gifOptions.IsVisible = format == EImageFormat.GIF;
             bmpOptions.IsVisible = format == EImageFormat.BMP;
+            jxlOptions.IsVisible = format == EImageFormat.JXL;
             automaticJpeg.IsVisible = format != EImageFormat.JPEG;
         }
 
@@ -367,7 +370,7 @@ internal sealed class TaskSettingsPageBuilder
                     UpdateEncoderVisibility(value);
                     _window.RefreshSettingsSearch();
                 })),
-                pngOptions, jpegOptions, gifOptions, bmpOptions,
+                pngOptions, jpegOptions, gifOptions, bmpOptions, jxlOptions,
                 Row(Strings.TaskSettingsWindow_IfFileExists, EnumCombo(() => image.FileExistAction, value => image.FileExistAction = value))),
             automaticJpeg);
     }
