@@ -222,6 +222,10 @@ namespace ShareX.ScreenCaptureLib
                     {
                         videoCodec = "libvpx-vp9";
                     }
+                    else if (FFmpeg.VideoCodec == FFmpegVideoCodec.libaom_av1)
+                    {
+                        videoCodec = "libaom-av1"; // FFmpeg's libaom encoder name uses dashes
+                    }
                     else
                     {
                         videoCodec = FFmpeg.VideoCodec.ToString();
